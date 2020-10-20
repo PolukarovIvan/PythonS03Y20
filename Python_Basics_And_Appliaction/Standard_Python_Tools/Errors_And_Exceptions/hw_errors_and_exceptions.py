@@ -1,38 +1,41 @@
-errors = {}
-
-n_errors = int(input())
-
-for _ in range(n_errors):
-    tmp_error = input().split()
-    if len(tmp_error) == 1:
-        errors[tmp_error[0]] = set()
-    else:
-        for element in tmp_error[2:]:
-            if not element in errors.keys():
-                errors[element] = set()
-            errors[element].add(tmp_error[0])
-            errors[tmp_error[0]] = set()
-
-
-def set_used(some_error):
-    used.add(some_error)
-    for current_error in errors[some_error]:
-        set_used(current_error)
-
-
-n_commands = int(input())
+error_parents = {}
+error_sons = dict()
+error_all = set()
 used = set()
-ans = list()
 
-for _ in range(n_commands):
+for _ in range(int(input())):
+    error = input().split()
+    error_all.add(error[0])
+    error_parents[error[0]] = set() if len(error) == 1 else set(error[2:])
+    if len(error) > 1:
+        for tmp in error[2:]:
+            error_all.add(tmp)
+
+for key in error_all:
+    error_sons[key] = set()
+
+for key in error_parents.keys():
+    for parent in error_parents[key]:
+        error_sons[parent].add(key)
+
+
+def set_used(current_parent):
+    used.add(current_parent)
+    if error_sons[current_parent] == set():
+        return
+    for son in error_sons[current_parent]:
+        set_used(son)
+
+
+ans = []
+
+for _ in range(int(input())):
     error = input()
     if error in used:
-        if not error in ans:
+        if error not in ans:
             ans.append(error)
-
     else:
         set_used(error)
 
-for answer in ans:
-    print(answer)
-
+for a in ans:
+    print(a)
